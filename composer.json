@@ -1,0 +1,77 @@
+{
+    "name": "turndale/smsonline",
+    "description": "A Laravel Package for SMSOnlineGH integration for laravel 11 and above",
+    "keywords": [
+        "smsonline laravel package",
+        "ghana-sms-laravel",
+        "smsonline-ghana-laravel",
+        "smsonline-ghana-laravel-package",
+        "sms-ghana-laravel",
+        "sms-laravel-package",
+        "sms-laravel",
+        "smsonline",
+        "sms",
+        "laravel-sms",
+        "laravel-sms-package",
+        "open-source smsonline",
+        "contributions smsonline",
+        "discussions",
+        "issue-tracking"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://stephenasare.dev/",
+    "authors": [
+        {
+            "name": "Stephen Asare",
+            "email": "me@stephenasare.dev",
+            "homepage": "https://stephenasare.dev/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/http": "^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.8",
+        "phpunit/phpunit": "^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Turndale\\SmsOnline\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Turndale\\SmsOnline\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Turndale\\SmsOnline\\SmsOnlineServiceProvider"
+            ],
+            "aliases": {
+                "SmsOnline": "Turndale\\SmsOnline\\Facades\\SmsOnline"
+            }
+        },
+        "branch-alias": {
+            "dev-1.x": "1.1-dev"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": false
+        }
+    }
+}
