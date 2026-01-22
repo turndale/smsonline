@@ -47,10 +47,16 @@ You can use the `sms()` helper function or the Facade to send messages.
 ```php
 use Turndale\SmsOnline\Facades\SmsOnline;
 
-// Using the helper
+// Using the Helper
 $response = sms('MyCompany')
-    ->message('Hello, this is a test message from Laravel.')
-    ->destinations(['0244123456', '0501234567'])
+    ->message('Hello from Helper!')
+    ->destinations(['0244123456'])
+    ->send();
+
+// Using the Facade
+$response = SmsOnline::sender('MyCompany')
+    ->message('Hello from Facade!')
+    ->destinations(['0244123456'])
     ->send();
 
 if ($response->successful()) {
@@ -65,9 +71,16 @@ if ($response->successful()) {
 The package is designed to be fluent:
 
 ```php
+// Helper
 sms()
     ->sender('MyBrand')
-    ->message('Your verification code is 1234')
+    ->message('Code: 1234')
+    ->destinations(['0551234567'])
+    ->send();
+
+// Facade
+SmsOnline::sender('MyBrand')
+    ->message('Code: 1234')
     ->destinations(['0551234567'])
     ->send();
 ```
@@ -77,10 +90,18 @@ sms()
 To schedule a message for later delivery, use the `schedule()` method. Pass the date/time string (YYYY-MM-DD HH:MM) and optionally a timezone offset.
 
 ```php
+// Helper
 sms('EventOrg')
-    ->message('Reminder: The event starts in 1 hour.')
+    ->message('Event starts in 1 hour.')
     ->destinations(['0244123456'])
-    ->schedule('2026-12-25 08:00', '+00:00') // Schedule for Christmas morning
+    ->schedule('2026-12-25 08:00', '+00:00')
+    ->send();
+
+// Facade
+SmsOnline::sender('EventOrg')
+    ->message('Event starts in 1 hour.')
+    ->destinations(['0244123456'])
+    ->schedule('2026-12-25 08:00', '+00:00')
     ->send();
 ```
 
@@ -89,7 +110,11 @@ sms('EventOrg')
 Retrieve your current account balance.
 
 ```php
+// Helper
 $response = sms()->balance();
+
+// Facade
+$response = SmsOnline::balance();
 
 $data = $response->json();
 $balance = $data['data']['balance'] ?? 0;
@@ -103,7 +128,11 @@ If you need to cancel a scheduled batch, use the `cancelScheduled` method with t
 ```php
 // $batchId = 'cfa19ba67f94fbd6b19c067b0c87ed4f'; // ID from the send response
 
+// Helper
 $response = sms()->cancelScheduled($batchId);
+
+// Facade
+$response = SmsOnline::cancelScheduled($batchId);
 
 if ($response->successful()) {
     echo "Scheduled message cancelled.";
