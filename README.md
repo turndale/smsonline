@@ -8,12 +8,12 @@ A comprehensive Laravel package for integrating with the [SMSOnlineGH](https://s
 
 ## Features
 
--   **Fluent Interface:** Easy-to-use chainable methods for constructing messages.
--   **Helper Function:** specific `sms()` helper for quick access.
--   **Scheduling:** Native support for scheduling messages with timezone offsets.
--   **Account Management:** Check balance and cancel scheduled batches easily.
--   **Laravel Support:** Compatible with Laravel 11.x and 12.x.
--   **PHP 8.1+ Support**
+- **Fluent Interface:** Easy-to-use chainable methods for constructing messages.
+- **Helper Function:** specific `sms()` helper for quick access.
+- **Scheduling:** Native support for scheduling messages with timezone offsets.
+- **Account Management:** Check balance and cancel scheduled batches easily.
+- **Laravel Support:** Compatible with Laravel 11.x and 12.x.
+- **PHP 8.1+ Support**
 
 ## Installation
 
@@ -66,6 +66,35 @@ if ($response->successful()) {
 }
 ```
 
+### Sending SMS with Default Sender
+
+If you've set the `SMSONLINE_DEFAULT_SENDER` environment variable in your `.env` file, you don't need to explicitly pass the sender when sending messages. This makes your code cleaner and allows you to manage the sender globally.
+
+```env
+SMSONLINE_DEFAULT_SENDER=MyCompany
+```
+
+Then you can send messages without specifying a sender:
+
+```php
+use Turndale\SmsOnline\Facades\SmsOnline;
+
+// Using the Helper (no sender parameter needed)
+$response = sms()
+    ->message('Hello using default sender!')
+    ->destinations(['0244000000'])
+    ->send();
+
+// Using the Facade (no sender() method needed)
+$response = SmsOnline::message('Hello using default sender!')
+    ->destinations(['0244000000'])
+    ->send();
+
+if ($response->successful()) {
+    echo "Message sent successfully!";
+}
+```
+
 ### Method Chaining
 
 The package is designed to be fluent:
@@ -75,13 +104,13 @@ The package is designed to be fluent:
 sms()
     ->sender('MyBrand')
     ->message('Code: 1234')
-    ->destinations(['0551234567'])
+    ->destinations(['0571234567'])
     ->send();
 
 // Facade
 SmsOnline::sender('MyBrand')
     ->message('Code: 1234')
-    ->destinations(['0551234567'])
+    ->destinations(['0571234567'])
     ->send();
 ```
 
@@ -161,8 +190,8 @@ If you discover any security related issues, please email me@stephenasare.dev in
 
 ## Credits
 
--   [Stephen Asare](https://github.com/stephenasaredev)
--   [All Contributors](../../contributors)
+- [Stephen Asare](https://github.com/stephenasaredev)
+- [All Contributors](../../contributors)
 
 ## License
 
