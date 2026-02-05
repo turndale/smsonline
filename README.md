@@ -42,7 +42,7 @@ SMSONLINE_DEFAULT_SENDER=YourSenderID
 
 ### Sending a Basic SMS
 
-You can use the `sms()` helper function or the Facade to send messages.
+You can use the `sms()` helper function or the Facade to send messages. All methods return an `SmsResponse` object with convenient methods for accessing the response data.
 
 ```php
 use Turndale\SmsOnline\Facades\SmsOnline;
@@ -61,8 +61,9 @@ $response = SmsOnline::sender('MyCompany')
 
 if ($response->successful()) {
     echo "Message sent successfully!";
+    echo "Batch ID: " . $response->getBatchId();
 } else {
-    echo "Failed to send message: " . $response->body();
+    echo "Failed to send message: " . $response->getError();
 }
 ```
 
@@ -166,6 +167,147 @@ $response = SmsOnline::cancelScheduled($batchId);
 if ($response->successful()) {
     echo "Scheduled message cancelled.";
 }
+```
+
+### Working with Responses
+
+All API methods (`send()`, `balance()`, `cancelScheduled()`) return an `SmsResponse` object that provides convenient methods for accessing the response data.
+
+#### Converting Response to Array
+
+```php
+$response = sms()
+    ->message('Hello World')
+    ->destinations(['0244123456'])
+    ->send();
+
+// Get the full response as an array
+$data = $response->toArray();
+
+// Or use json() method (same result)
+$data = $response->json();
+
+// Access specific keys with dot notation
+$batchId = $response->json('data.batch_id');
+$status = $response->json('status');
+
+// With default value for missing keys
+$value = $response->json('nonexistent.key', 'default_value');
+```
+
+#### Accessing Data Directly
+
+```php
+// Get the 'data' portion of the response
+$data = $response->getData();
+
+// Access nested keys within data
+$batchId = $response->getData('batch_id');
+$credits = $response->getData('credits');
+
+// Shortcut for batch ID
+$batchId = $response->getBatchId();
+```
+
+#### Array Access
+
+The response object supports array access for convenience:
+
+```php
+$response = sms()->message('Test')->destinations(['0244123456'])->send();
+
+// Access like an array
+$status = $response['status'];
+$batchId = $response['data']['batch_id'];
+
+// Check if key exists
+if (isset($response['data'])) {
+    // ...
+}
+```
+
+#### Status Helpers
+
+```php
+$response = sms()->message('Test')->destinations(['0244123456'])->send();
+
+// Check if request was successful (2xx status code)
+if ($response->successful()) {
+    echo "Success!";
+}
+
+// Alternative method
+if ($response->ok()) {
+    echo "Success!";
+}
+
+// Check if request failed (4xx or 5xx status code)
+if ($response->failed()) {
+    echo "Error: " . $response->getError();
+}
+
+// Check specific error types
+if ($response->clientError()) {
+    echo "Client error (4xx)";
+}
+
+if ($response->serverError()) {
+    echo "Server error (5xx)";
+}
+
+// Get HTTP status code
+$statusCode = $response->status(); // e.g., 200, 401, 500
+```
+
+#### Error Handling
+
+```php
+$response = sms()->message('Test')->destinations(['0244123456'])->send();
+
+if ($response->failed()) {
+    // Get error message from response
+    $error = $response->getError();
+    
+    // Get raw response body
+    $body = $response->body();
+    
+    // Get status code for logging
+    $status = $response->status();
+    
+    Log::error("SMS failed", [
+        'error' => $error,
+        'status' => $status,
+        'body' => $body,
+    ]);
+}
+```
+
+#### JSON Serialization
+
+The response can be easily serialized to JSON:
+
+```php
+$response = sms()->message('Test')->destinations(['0244123456'])->send();
+
+// Automatically converts to JSON
+$json = json_encode($response);
+
+// Or cast to string (pretty printed JSON)
+echo (string) $response;
+```
+
+#### Accessing the Original Laravel Response
+
+If you need access to the underlying Laravel HTTP response:
+
+```php
+$response = sms()->message('Test')->destinations(['0244123456'])->send();
+
+// Get the original Illuminate\Http\Client\Response
+$laravelResponse = $response->getResponse();
+
+// Access headers
+$headers = $response->headers();
 ```
 
 ## Testing

@@ -5,6 +5,7 @@ namespace Turndale\SmsOnline;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
 use RuntimeException;
+use Turndale\SmsOnline\SmsResponse;
 
 class SmsOnline
 {
@@ -79,10 +80,10 @@ class SmsOnline
     /**
      * Send the SMS.
      *
-     * @return \Illuminate\Http\Client\Response
+     * @return \Turndale\SmsOnline\SmsResponse
      * @throws \RuntimeException
      */
-    public function send()
+    public function send(): SmsResponse
     {
         if (empty($this->destinations)) {
             throw new RuntimeException('No destinations provided for SMS.');
@@ -119,15 +120,15 @@ class SmsOnline
             'Authorization' => 'key ' . $apiKey,
         ])->post($this->baseUrl . '/message/sms/send', $payload);
 
-        return $response;
+        return new SmsResponse($response);
     }
 
     /**
      * Get account balance.
      *
-     * @return \Illuminate\Http\Client\Response
+     * @return \Turndale\SmsOnline\SmsResponse
      */
-    public function balance()
+    public function balance(): SmsResponse
     {
          $apiKey = Config::get('smsonline.api_key');
          
@@ -135,20 +136,22 @@ class SmsOnline
             throw new RuntimeException('SMSOnline API Key is not configured.');
         }
 
-         return Http::withHeaders([
+         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
             'Authorization' => 'key ' . $apiKey,
         ])->post($this->baseUrl . '/account/balance');
+
+        return new SmsResponse($response);
     }
     
     /**
      * Cancel a scheduled message batch.
      * 
      * @param string $batchId
-     * @return \Illuminate\Http\Client\Response
+     * @return \Turndale\SmsOnline\SmsResponse
      */
-    public function cancelScheduled(string $batchId)
+    public function cancelScheduled(string $batchId): SmsResponse
     {
          $apiKey = Config::get('smsonline.api_key');
 
@@ -156,9 +159,11 @@ class SmsOnline
             throw new RuntimeException('SMSOnline API Key is not configured.');
         }
 
-         return Http::withHeaders([
+         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'key ' . $apiKey,
         ])->post($this->baseUrl . '/message/scheduled/cancel/' . $batchId);
+
+        return new SmsResponse($response);
     }
 }
